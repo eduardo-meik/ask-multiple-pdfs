@@ -1,13 +1,13 @@
 css = '''
 <style>
 .chat-message {
-    padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex
+    padding: 1.5rem; border-radius: 0.65rem; margin-bottom: 1rem; display: flex
 }
 .chat-message.user {
-    background-color: #2b313e
+    background-color: 0.125rem solid #39c0ed
 }
 .chat-message.bot {
-    background-color: #475063
+    background-color: 0.125rem solid #bfbfbf
 }
 .chat-message .avatar {
   width: 20%;
