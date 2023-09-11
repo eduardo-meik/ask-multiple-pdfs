@@ -73,7 +73,7 @@ def main():
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
-    st.session_state.conversation = {}
+        st.session_state.conversation = {}
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
