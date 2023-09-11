@@ -31,7 +31,7 @@ css = '''
 }
 </style>
 
-
+'''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
