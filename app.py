@@ -1,76 +1,6 @@
-import streamlit as st
-from dotenv import load_dotenv
-from PyPDF2 import PdfReader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from htmlTemplates import css, bot_template, user_template
-from langchain.llms import HuggingFaceHub
-from langchain.chat_models import ChatOpenAI
-
-
-def get_pdf_text(pdf_docs):
-    text = ""
-    for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
-    return text
-
-
-def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
-    )
-    chunks = text_splitter.split_text(text)
-    return chunks
-
-
-def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
-    return vectorstore
-
-
-def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
-
-    memory = ConversationBufferMemory(
-        memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-        memory=memory,
-        return_source_documents=True    
-    )
-    return conversation_chain
-
-
-def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
-
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-
-
 def main():
     load_dotenv()
-    st.set_page_config(page_title="Pullm-AI, Repositorio Inteligente",
-                       page_icon=":robot_face:")
+    st.set_page_config(page_title="Pullm-AI, Repositorio Inteligente", page_icon=":robot_face:")
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
@@ -78,15 +8,24 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Asistente Virtual para consultas sobre Procedimientos")
-    user_question = st.text_input("Consultar sobre procedimientos")
-    if user_question:
-        handle_userinput(user_question)
+    # Create columns for layout adjustment
+    left_column, right_column = st.beta_columns([1, 3])
 
-    with st.sidebar:
+    with right_column:
+        st.header("Asistente Virtual para consultas sobre Procedimientos")
+
+        # This will allow for scrolling and encapsulate the chat in its container
+        with st.beta_container():
+            if st.session_state.chat_history:
+                for i, message in enumerate(st.session_state.chat_history):
+                    if i % 2 == 0:
+                        st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+                    else:
+                        st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
+    with left_column:
         st.subheader("Documentos")
-        pdf_docs = st.file_uploader(
-            "Cargar archivos PDF y apretar 'Procesar'", accept_multiple_files=True)
+        pdf_docs = st.file_uploader("Cargar archivos PDF y apretar 'Procesar'", accept_multiple_files=True)
         if st.button("Procesar"):
             with st.spinner("Procesando"):
                 # get pdf text
@@ -99,9 +38,12 @@ def main():
                 vectorstore = get_vectorstore(text_chunks)
 
                 # create conversation chain
-                st.session_state.conversation = get_conversation_chain(
-                    vectorstore)
+                st.session_state.conversation = get_conversation_chain(vectorstore)
 
+    # Set the user input bar at the bottom
+    user_question = st.text_input("Consultar sobre procedimientos")
+    if user_question:
+        handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
