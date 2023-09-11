@@ -78,14 +78,15 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    # Container for the Header
-    with st.beta_container():
-        st.header("Asistente Virtual para consultas sobre Procedimientos")
+    st.header("Asistente Virtual para consultas sobre Procedimientos")
+    user_question = st.text_input("Consultar sobre procedimientos")
+    if user_question:
+        handle_userinput(user_question)
 
-    # Sidebar for documents
     with st.sidebar:
         st.subheader("Documentos")
-        pdf_docs = st.file_uploader("Cargar archivos PDF y apretar 'Procesar'", accept_multiple_files=True)
+        pdf_docs = st.file_uploader(
+            "Cargar archivos PDF y apretar 'Procesar'", accept_multiple_files=True)
         if st.button("Procesar"):
             with st.spinner("Procesando"):
                 # get pdf text
@@ -98,25 +99,11 @@ def main():
                 vectorstore = get_vectorstore(text_chunks)
 
                 # create conversation chain
-                st.session_state.conversation = get_conversation_chain(vectorstore)
-
-    # This container will occupy the remaining space
-    with st.beta_container():
-        if st.session_state.chat_history:
-            for i, message in enumerate(st.session_state.chat_history):
-                if i % 2 == 0:
-                    st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-                else:
-                    st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-
-    # Fixed container at the bottom for user input
-    user_input_container = st.beta_container()
-    with user_input_container:
-        user_question = st.text_input("Consultar sobre procedimientos")
-        if user_question:
-            handle_userinput(user_question)
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
 
 
 if __name__ == '__main__':
     main()
+
 
