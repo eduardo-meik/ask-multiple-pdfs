@@ -5,12 +5,12 @@ css = '''
 }
 
 .chat-message.user {
-    background-color: #39c0ed; /* Fixed color definition */
+    background-color: #E3E3E3; /* Fixed color definition */
     flex-direction: row-reverse;
 }
 
 .chat-message.bot {
-    background-color: #bfbfbf; /* Fixed color definition */
+    background-color: #D4D4D4; /* Fixed color definition */
 }
 
 .chat-message .avatar {
