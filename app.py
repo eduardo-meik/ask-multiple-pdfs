@@ -49,6 +49,7 @@ def get_conversation_chain(vectorstore):
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory
+        return_source_documents=True
     )
     return conversation_chain
 
