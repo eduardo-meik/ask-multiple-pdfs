@@ -1,29 +1,36 @@
 css = '''
 <style>
 .chat-message {
-    padding: 1.5rem; border-radius: 0.65rem; margin-bottom: 1rem; display: flex
+    padding: 1.5rem; border-radius: 0.65rem; margin-bottom: 1rem; display: flex;
 }
+
 .chat-message.user {
-    background-color: 0.125rem solid #39c0ed
+    background-color: #39c0ed; /* Fixed color definition */
+    flex-direction: row-reverse;
 }
+
 .chat-message.bot {
-    background-color: 0.125rem solid #bfbfbf
+    background-color: #bfbfbf; /* Fixed color definition */
 }
+
 .chat-message .avatar {
   width: 20%;
 }
+
 .chat-message .avatar img {
   max-width: 78px;
   max-height: 78px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .chat-message .message {
   width: 80%;
   padding: 0 1.5rem;
   color: #000000;
 }
-'''
+</style>
+
 
 bot_template = '''
 <div class="chat-message bot">
