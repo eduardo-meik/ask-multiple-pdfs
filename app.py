@@ -78,9 +78,23 @@ def main():
         st.session_state.chat_history = None
 
     st.header("Asistente Virtual para consultas sobre Procedimientos")
-    user_question = st.text_input("Consultar sobre procedimientos")
-    if user_question:
-        handle_userinput(user_question)
+
+    # Wrapping chat in a container for proper positioning
+    with st.container():
+        with st.container(className="chat-history"):  # Chat history container
+            if st.session_state.chat_history:
+                for i, message in enumerate(st.session_state.chat_history):
+                    if i % 2 == 0:
+                        st.write(user_template.replace(
+                            "{{MSG}}", message.content), unsafe_allow_html=True)
+                    else:
+                        st.write(bot_template.replace(
+                            "{{MSG}}", message.content), unsafe_allow_html=True)
+
+        with st.container(className="chat-input"):  # Chat input container
+            user_question = st.text_input("Consultar sobre procedimientos")
+            if user_question:
+                handle_userinput(user_question)
 
     with st.sidebar:
         st.subheader("Documentos")
@@ -101,8 +115,10 @@ def main():
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
-
 if __name__ == '__main__':
     main()
+
+
+
 
 
