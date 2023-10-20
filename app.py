@@ -66,7 +66,6 @@ def handle_userinput(user_question):
                 "{{MSG}}", message.content), unsafe_allow_html=True)
 
 
-# ... [rest of the imports]
 
 def main():
     load_dotenv()
@@ -103,7 +102,8 @@ def main():
         handle_userinput(user_question)
     st.write('</div>', unsafe_allow_html=True)  # End of chat input container
 
-    st.write('</div>', unsafe_allow_html=True)  # End of chat container
+   st.write("⚠️ Atención: Este chat puede proporcionar datos imprecisos. Requiere entrenamiento específico para un uso en particular. Siempre verifique la información antes de tomar decisiones basadas en ella.")
+  # End of chat container
 
     with st.sidebar:
         st.subheader("Documentos")
