@@ -78,7 +78,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Asistente Virtual para consultas sobre Procedimientos")
+    st.header("Asistente Virtual para Gestión de Conocimiento")
 
     # Start of chat container
     st.write('<div class="chat-container">', unsafe_allow_html=True)
