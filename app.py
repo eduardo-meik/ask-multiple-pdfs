@@ -2,15 +2,12 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
-from langchain.llms import HuggingFaceHub
-from langchain.chat_models import ChatOpenAI
-
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -19,7 +16,6 @@ def get_pdf_text(pdf_docs):
         for page in pdf_reader.pages:
             text += page.extract_text()
     return text
-
 
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
@@ -31,18 +27,13 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-
 def get_vectorstore(text_chunks):
     embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI(model_name='gpt-4')
-    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
-
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
@@ -51,7 +42,6 @@ def get_conversation_chain(vectorstore):
         memory=memory      
     )
     return conversation_chain
-
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
@@ -64,8 +54,6 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-
-
 
 def main():
     load_dotenv()
@@ -80,10 +68,17 @@ def main():
 
     st.header("Asistente Virtual para Gestión de Conocimiento")
 
-    # Start of chat container
+    # Contenedor del chat
     st.write('<div class="chat-container">', unsafe_allow_html=True)
 
-    # Chat history container
+    # Entrada de chat (Input bar on top)
+    st.write('<div class="chat-input">', unsafe_allow_html=True)
+    user_question = st.text_input("Consultar sobre procedimientos")
+    if user_question:
+        handle_userinput(user_question)
+    st.write('</div>', unsafe_allow_html=True)  # Fin de la entrada de chat
+
+    # Historial de chat
     st.write('<div class="chat-history">', unsafe_allow_html=True)
     if st.session_state.chat_history:
         for i, message in enumerate(st.session_state.chat_history):
@@ -93,17 +88,11 @@ def main():
             else:
                 st.write(bot_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
-    st.write('</div>', unsafe_allow_html=True)  # End of chat history container
+    st.write('</div>', unsafe_allow_html=True)  # Fin del historial de chat
 
-    # Chat input container
-    st.write('<div class="chat-input">', unsafe_allow_html=True)
-    user_question = st.text_input("Consultar sobre procedimientos")
-    if user_question:
-        handle_userinput(user_question)
-    st.write('</div>', unsafe_allow_html=True)  # End of chat input container
+    st.write('</div>', unsafe_allow_html=True)  # Fin del contenedor del chat
 
     st.write("⚠️ Atención: Este chat puede proporcionar datos imprecisos. Requiere entrenamiento específico para un uso en particular. Siempre verifique la información antes de tomar decisiones basadas en ella.")
-  # End of chat container
 
     with st.sidebar:
         st.subheader("Documentos")
@@ -111,18 +100,19 @@ def main():
             "Cargar archivos PDF y apretar 'Procesar'", accept_multiple_files=True)
         if st.button("Procesar"):
             with st.spinner("Procesando"):
-                # get pdf text
+                # Obtener texto de los PDFs
                 raw_text = get_pdf_text(pdf_docs)
 
-                # get the text chunks
+                # Dividir el texto en fragmentos
                 text_chunks = get_text_chunks(raw_text)
 
-                # create vector store
+                # Crear el almacén vectorial
                 vectorstore = get_vectorstore(text_chunks)
 
-                # create conversation chain
+                # Crear la cadena de conversación
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
 if __name__ == '__main__':
     main()
+
