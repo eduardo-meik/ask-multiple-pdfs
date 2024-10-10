@@ -33,7 +33,18 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI(model_name='gpt-4')
+    llm = ChatOpenAI(
+    model="gpt-4o",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2
+    # api_key="...",  # if you prefer to pass api key in directly instaed of using env vars
+    # base_url="...",
+    # organization="...",
+    # other params...
+)
+    )
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
