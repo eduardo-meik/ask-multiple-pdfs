@@ -1,56 +1,82 @@
 css = '''
 <style>
-/* Your existing styles... */
+/* Contenedor principal */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Barra de entrada de chat */
+.chat-input {
+    position: sticky;
+    top: 0;
+    background: #f9f9f9;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    z-index: 1000;
+}
+
+/* Historial de chat */
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+/* Mensajes de chat */
 .chat-message {
-    padding: 1.5rem; border-radius: 0.65rem; margin-bottom: 1rem; display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .chat-message.user {
-    background-color: #E3E3E3;
+    background-color: #dcf8c6;
     flex-direction: row-reverse;
 }
 
 .chat-message.bot {
-    background-color: #D4D4D4;
+    background-color: #ececec;
 }
 
 .chat-message .avatar {
-  width: 20%;
+    width: 40px;
+    height: 40px;
 }
 
 .chat-message .avatar img {
-  max-width: 78px;
-  max-height: 78px;
-  border-radius: 50%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .chat-message .message {
-  width: 80%;
-  padding: 0 1.5rem;
-  color: #000000;
+    max-width: 80%;
+    margin: 0 10px;
+    word-wrap: break-word;
+    color: #000000;
 }
 
-/* New styles for chat positioning */
-.chat-history {
-    max-height: calc(100vh - 120px); /* Adjust based on the estimated height of the input */
-    overflow-y: auto;
+/* Estilos adicionales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.chat-input {
-    position: sticky;
-    bottom: 10px;
-    background: white;
-    padding: 10px 0;
-    border-top: 1px solid #ccc;
-}
 </style>
 '''
 
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://www.meiklabs.com/wp-content/uploads/2023/09/robot.png" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+        <img src="https://www.meiklabs.com/wp-content/uploads/2023/09/robot.png">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -60,7 +86,8 @@ user_template = '''
 <div class="chat-message user">
     <div class="avatar">
         <img src="https://www.meiklabs.com/wp-content/uploads/2023/09/profile.png">
-    </div>    
+    </div>
     <div class="message">{{MSG}}</div>
 </div>
 '''
+
